@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NFT Prompt Manager Pro</title>
+    <style>
+      :root {
+        --bg-color: #0b111e;
+        --panel-bg: #151f32;
+        --card-bg: #1e293b;
+        --primary: #0ea5e9;
+        --primary-hover: #38bdf8;
+        --danger: #ef4444;
+        --danger-hover: #f87171;
+        --save: #10b981;
+        --save-hover: #34d399;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 700px;
+        margin-top: 70px;
+        position: relative;
+      }
+
+      .action-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(11, 17, 30, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border-color);
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .brand-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        background: linear-gradient(to right, #38bdf8, #818cf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+      }
+
+      .save-header-btn {
+        background: var(--save);
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .save-header-btn:hover {
+        background: var(--save-hover);
+        transform: translateY(-2px);
+      }
+
+      .upload-card {
+        background: var(--panel-bg);
+        padding: 35px 20px;
+        border-radius: 20px;
+        text-align: center;
+        border: 2px dashed rgba(14, 165, 233, 0.4);
+        cursor: pointer;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .upload-card:hover {
+        border-color: var(--primary);
+        background: #1c2a44;
+        transform: translateY(-2px);
+      }
+
+      #file-input { display: none; }
+
+      .info-bar {
+        background: rgba(14, 165, 233, 0.1);
+        border: 1px solid rgba(14, 165, 233, 0.25);
+        color: #38bdf8;
+        padding: 12px 20px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+      }
+
+      .prompt-card {
+        background: var(--panel-bg);
+        margin-bottom: 20px;
+        border-radius: 18px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 12px;
+      }
+
+      .line-number {
+        background: rgba(14, 165, 233, 0.15);
+        color: #38bdf8;
+        padding: 4px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .prompt-text {
+        font-size: 15px;
+        color: #e2e8f0;
+        line-height: 1.7;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        background: var(--card-bg);
+        padding: 15px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.02);
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .btn {
+        flex: 1;
+        border: none;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .copy-btn { 
+        background: rgba(14, 165, 233, 0.15); 
+        color: #38bdf8;
+        border: 1px solid rgba(14, 165, 233, 0.3);
+      }
+      .copy-btn:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .delete-btn { 
+        background: rgba(239, 68, 68, 0.1); 
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+      .delete-btn:hover {
+        background: var(--danger);
+        color: white;
+      }
+
+      @media (max-width: 480px) {
+        .container { margin-top: 80px; }
+        .brand-title { font-size: 1.1rem; }
+        .save-header-btn { padding: 8px 16px; font-size: 13px; }
+        .prompt-card { padding: 15px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="action-header">
+      <h1 class="brand-title">⚡ NFT Prompt Manager Pro</h1>
+      <button class="save-header-btn" onclick="saveCurrentWork()">
+        💾 Save Work
+      </button>
+    </header>
+
+    <div class="container">
+      <div class="upload-card" onclick="document.getElementById('file-input').click()">
+        <div style="font-size: 36px; margin-bottom: 8px;">📁</div>
+        <strong style="color: var(--primary); font-size: 16px;">নতুন JSON ফাইল আপলোড করুন</strong>
+        <p style="color: var(--text-muted); margin: 5px 0 0 0; font-size: 13px;">বিশাল সাইজের (৫০,০০০+) জেসন ফাইল সমর্থিত</p>
+        <input type="file" id="file-input" accept=".json" />
+      </div>
+
+      <div id="status-bar" class="info-bar" style="display: none;">
+        <span id="count-text">মোট প্রম্পট: 0</span>
+        <span id="file-name-text" style="opacity: 0.8;"></span>
+      </div>
+
+      <div id="display-area"></div>
+    </div>
+
+    <textarea id="hidden-copy-area" style="position: absolute; left: -9999px; top: 0;"></textarea>
+
+    <script>
+      const fileInput = document.getElementById('file-input');
+      const displayArea = document.getElementById('display-area');
+      const statusBar = document.getElementById('status-bar');
+      const countText = document.getElementById('count-text');
+      const fileNameText = document.getElementById('file-name-text');
+      const hiddenCopyArea = document.getElementById('hidden-copy-area');
+
+      let currentPromptsList = [];
+      let db = null;
+
+      // IndexedDB ডাটাবেজ সেটআপ (বিশাল ডাটা সেভ করার জন্য)
+      const dbRequest = indexedDB.open("NFTPromptManagerDB", 1);
+      dbRequest.onupgradeneeded = function(e) {
+        let database = e.target.result;
+        if (!database.objectStoreNames.contains("work_progress")) {
+          database.createObjectStore("work_progress", { keyPath: "id" });
+        }
+      };
+      dbRequest.onsuccess = function(e) {
+        db = e.target.result;
+        loadSavedDataFromDB();
+      };
+      dbRequest.onerror = function() {
+        console.error("ডাটাবেজ ওপেন করা যায়নি।");
+      };
+
+      // ডাটাবেজ থেকে ডাটা লোড করা
+      function loadSavedDataFromDB() {
+        if (!db) return;
+        const transaction = db.transaction(["work_progress"], "readonly");
+        const store = transaction.objectStore("work_progress");
+        const request = store.get("current_work");
+
+        request.onsuccess = function(e) {
+          const result = e.target.result;
+          if (result && result.prompts && result.prompts.length > 0) {
+            fileNameText.innerText = "Saved Progress";
+            statusBar.style.display = 'flex';
+            currentPromptsList = result.prompts;
+            renderPromptsFromList();
+          }
+        };
+      }
+
+      fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        fileNameText.innerText = file.name;
+        statusBar.style.display = 'flex';
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          try {
+            const json = JSON.parse(event.target.result);
+            let rawData = [];
+
+            if (Array.isArray(json)) {
+              rawData = json;
+            } else if (json.nft_prompts && Array.isArray(json.nft_prompts)) {
+              rawData = json.nft_prompts;
+            } else if (typeof json === 'object' && json !== null) {
+              rawData = Object.values(json);
+            }
+
+            currentPromptsList = [];
+            rawData.forEach(item => {
+              const text = parsePromptContent(item);
+              if (text && text !== '{}' && text !== '[]') {
+                currentPromptsList.push(text);
+              }
+            });
+
+            renderPromptsFromList();
+          } catch (err) {
+            alert("সঠিক JSON ফাইল দিন।");
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      function parsePromptContent(item) {
+        if (typeof item === 'string') return item.trim();
+        if (typeof item === 'number' || typeof item === 'boolean') return String(item);
+        
+        if (typeof item === 'object' && item !== null) {
+          const targetKeys = ['prompt', 'text', 'description', 'value', 'content', 'prompt_text'];
+          for (let key of targetKeys) {
+            if (item[key] !== undefined && item[key] !== null) {
+              return String(item[key]).trim();
+            }
+          }
+          
+          const filteredParts = [];
+          Object.keys(item).forEach(key => {
+            if (!/^(id|index|no|_id|key|serial|status)$/i.test(key)) {
+              if (item[key] !== null && typeof item[key] !== 'object') {
+                filteredParts.push(item[key]);
+              } else if (typeof item[key] === 'object') {
+                filteredParts.push(JSON.stringify(item[key]));
+              }
+            }
+          });
+
+          if (filteredParts.length > 0) {
+            return filteredParts.join('\n');
+          }
+          return JSON.stringify(item);
+        }
+        return "";
+      }
+
+      // মেমোরি লিস্ট থেকে স্ক্রিনে নিখুঁত ফ্রেশ রেন্ডারিং লজিক
+      function renderPromptsFromList() {
+        displayArea.innerHTML = '';
+        
+        // ডক ফ্র্যাগমেন্ট ব্যবহার করা হয়েছে যেন ৫০,০০০ ডাটা রেন্ডার হলেও ব্রাউজার স্লো না হয়
+        const fragment = document.createDocumentFragment();
+        
+        currentPromptsList.forEach((text, index) => {
+          const card = createCardNode(text, index + 1);
+          fragment.appendChild(card);
+        });
+        
+        displayArea.appendChild(fragment);
+        updateCount();
+      }
+
+      // ডাইনামিক নোড ক্রিয়েশন (আইডি নিখুঁত রাখার অন্যতম সেরা মেথড)
+      function createCardNode(text, currentIdNumber) {
+        const card = document.createElement('div');
+        card.className = 'prompt-card';
+        
+        const cardHeader = document.createElement('div');
+        cardHeader.className = 'card-header';
+        cardHeader.innerHTML = `<span class="line-number">আইটেম #${currentIdNumber}</span>`;
+        
+        const promptTextBox = document.createElement('div');
+        promptTextBox.className = 'prompt-text';
+        promptTextBox.textContent = text;
+        
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'actions';
+        
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn copy-btn';
+        copyBtn.innerHTML = '📋 Copy';
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn delete-btn';
+        deleteBtn.innerHTML = '🗑️ Delete';
+
+        // ১০০% ওয়ার্কিং কপি লজিক
+        copyBtn.addEventListener('click', function() {
+          hiddenCopyArea.value = text;
+          hiddenCopyArea.select();
+          hiddenCopyArea.setSelectionRange(0, 99999);
+          
+          let success = false;
+          try { success = document.execCommand('copy'); } catch (err) { success = false; }
+
+          if (success) {
+            const originalHTML = copyBtn.innerHTML;
+            copyBtn.innerHTML = "✅ Copied!";
+            copyBtn.style.background = "var(--save)";
+            copyBtn.style.color = "#ffffff";
+            setTimeout(() => {
+              copyBtn.innerHTML = originalHTML;
+              copyBtn.style.background = "rgba(14, 165, 233, 0.15)";
+              copyBtn.style.color = "#38bdf8";
+            }, 1200);
+          } else {
+            navigator.clipboard.writeText(text).then(() => {
+              copyBtn.innerHTML = "✅ Copied!";
+              setTimeout(() => { copyBtn.innerHTML = '📋 Copy'; }, 1200);
+            });
+          }
+        });
+
+        // ডিলিট করার সাথে সাথে মেমোরি থেকে মুছে পুরো সিকোয়েন্স রিবিল্ড করার ফিক্সড মেথড
+        deleteBtn.addEventListener('click', function() {
+          // লিস্ট থেকে এক্সাক্ট ইনডেক্স ধরে ডিলিট করা হচ্ছে
+          currentPromptsList.splice(currentIdNumber - 1, 1);
+          
+          // পুরো ডাটাবেজ বা লিস্ট আবার রি-রেন্ডার হবে, ফলে আইডি ডুপ্লিকেট হবে না
+          renderPromptsFromList();
+        });
+
+        actionsDiv.appendChild(copyBtn);
+        actionsDiv.appendChild(deleteBtn);
+        card.appendChild(cardHeader);
+        card.appendChild(promptTextBox);
+        card.appendChild(actionsDiv);
+        
+        return card;
+      }
+
+      function updateCount() {
+        countText.innerText = `মোট প্রম্পট: ${currentPromptsList.length}`;
+        if (currentPromptsList.length === 0) {
+          statusBar.style.display = 'none';
+        }
+      }
+
+      // ডাটাবেজে ৫০,০০০+ ডাটা চোখের পলকে সেভ করার আল্ট্রা-ফাস্ট মেথড
+      function saveCurrentWork() {
+        if (!db) {
+          alert("ডাটাবেজ প্রস্তুত নয়, একটু পর চেষ্টা করুন।");
+          return;
+        }
+
+        const transaction = db.transaction(["work_progress"], "readwrite");
+        const store = transaction.objectStore("work_progress");
+        
+        const dataToSave = {
+          id: "current_work",
+          prompts: currentPromptsList,
+          updated_at: new Date().getTime()
+        };
+
+        const request = store.put(dataToSave);
+
+        request.onsuccess = function() {
+          const saveBtn = document.querySelector('.save-header-btn');
+          saveBtn.innerHTML = "✅ Saved to DB!";
+          saveBtn.style.background = "#059669";
+          
+          setTimeout(() => {
+            saveBtn.innerHTML = "💾 Save Work";
+            saveBtn.style.background = "var(--save)";
+          }, 2000);
+        };
+
+        request.onerror = function() {
+          alert("ডাটা সেভ করতে সমস্যা হয়েছে। ফাইল অতিরিক্ত বড় হলে ব্রাউজার পারমিশন চেক করুন।");
+        };
+      }
+    </script>
+  </body>
+</html>
